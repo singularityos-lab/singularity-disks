@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Disks
+Comment=Manage drives, partitions and disk images
+Exec=singularity-disks
+Icon=dev.sinty.disks
+Terminal=false
+Type=Application
+Categories=System;Utility;
+Keywords=disk;drive;partition;format;usb;smart;benchmark;image;luks;encrypt;mount;
+StartupWMClass=dev.sinty.disks
+Actions=attach-image;
+
+[Desktop Action attach-image]
+Name=Attach Disk Image
+Exec=singularity-disks --attach-image

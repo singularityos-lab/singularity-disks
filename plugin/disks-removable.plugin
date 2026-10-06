@@ -1,0 +1,8 @@
+[Plugin]
+Module=disks-removable
+Name=Removable Media
+Description=Shows connected USB drives and memory cards in the top bar and as an overview widget, with free space and Eject
+Authors=Singularity Team
+Copyright=Copyright © 2025 Singularity Team
+Website=https://sinty.dev
+X-Singularity-App=dev.sinty.disks

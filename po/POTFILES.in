@@ -1,0 +1,12 @@
+src/app.vala
+src/window.vala
+src/dialogs.vala
+src/smart.vala
+src/benchmark.vala
+src/imaging.vala
+src/format.vala
+src/volume_bar.vala
+src/udisks.vala
+plugin/removable.vala
+plugin/removable_widget.vala
+plugin/removable_plugin.vala
