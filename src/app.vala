@@ -112,7 +112,7 @@ namespace Singularity.Apps.Disks {
             add_action (attach);
             var quit_action = new SimpleAction ("quit", null);
             quit_action.activate.connect (() => {
-                foreach (var w in get_windows ()) w.close ();
+                foreach (var w in get_windows ().copy ()) w.close ();
             });
             add_action (quit_action);
             var settings_action = new SimpleAction ("settings", null);
