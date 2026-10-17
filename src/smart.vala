@@ -246,7 +246,12 @@ namespace Singularity.Apps.Disks {
         }
 
         private void show_test_menu () {
-            var menu = new ContextMenu (test_button);
+            var anchor = test_button.get_parent ();
+            var menu = new ContextMenu (anchor);
+            Graphene.Rect bounds;
+            if (test_button.compute_bounds (anchor, out bounds)) {
+                menu.set_pointing_to ({ (int) bounds.origin.x, (int) bounds.origin.y, (int) bounds.size.width, (int) bounds.size.height });
+            }
             menu.add_item (_("Short Test (a few minutes)"), null, () => start_test.begin ("short"));
             menu.add_item (_("Extended Test (may take hours)"), null, () => start_test.begin ("extended"));
             if (!nvme) menu.add_item (_("Conveyance Test"), null, () => start_test.begin ("conveyance"));
@@ -325,13 +330,10 @@ namespace Singularity.Apps.Disks {
                 header ({ _("Attribute"), _("Value") });
                 var dict = reply.get_child_value (0);
                 int row = 1;
-                var iter = dict.iterator ();
-                string key;
-                Variant val;
-                while (iter.next ("{sv}", out key, out val)) {
-                    string? name = nvme_name (key);
-                    if (name == null) continue;
-                    cell (0, row, name);
+                foreach (string key in NVME_KEYS) {
+                    var val = dict.lookup_value (key, null);
+                    if (val == null) continue;
+                    cell (0, row, nvme_name (key));
                     cell (1, row, nvme_value (key, val), true);
                     row++;
                 }
@@ -403,6 +405,12 @@ namespace Singularity.Apps.Disks {
                 default: return key;
             }
         }
+
+        private const string[] NVME_KEYS = {
+            "percent_used", "avail_spare", "spare_thresh", "total_data_read", "total_data_written",
+            "power_cycles", "unsafe_shutdowns", "ctrl_busy_time", "media_errors", "num_err_log_entries",
+            "wctemp", "cctemp", "warning_temp_time", "critical_temp_time"
+        };
 
         private string? nvme_name (string key) {
             switch (key) {
