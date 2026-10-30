@@ -154,6 +154,11 @@ namespace Singularity.Apps.Disks {
             return ngettext ("%lld year", "%lld years", (ulong) (days / 365)).printf (days / 365);
         }
 
+        public static uint64 writes_left (uint64 written, uint percent_used) {
+            if (percent_used == 0 || percent_used >= 100) return 0;
+            return written / percent_used * (100 - percent_used);
+        }
+
         public static string temperature (double kelvin) {
             if (kelvin <= 0) return "";
             return "%.0f °C".printf (kelvin - 273.15);

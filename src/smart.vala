@@ -6,6 +6,9 @@ namespace Singularity.Apps.Disks {
     public class SmartDialog : AppDialog {
         private UObject drive;
         private bool nvme;
+        private bool life_known;
+        private uint life_used;
+        private uint64 life_written;
         private Label assessment;
         private Label assessment_detail;
         private Grid summary;
@@ -163,6 +166,12 @@ namespace Singularity.Apps.Disks {
                 }
                 uint64 hours = drive.u64 (i, "SmartPowerOnHours");
                 if (hours > 0) add_summary (row++, _("Powered On"), Format.duration ((int64) hours * 3600));
+                if (life_known) {
+                    add_summary (row++, _("Life Remaining"), "%u%%".printf (100 - uint.min (life_used, 100)));
+                    add_summary (row++, _("Total Written"), Format.size (life_written));
+                    uint64 left = Format.writes_left (life_written, life_used);
+                    if (left > 0) add_summary (row++, _("Estimated Writes Left"), Format.size (left));
+                }
             } else {
                 bool supported = drive.flag (i, "SmartSupported");
                 bool failing = drive.flag (i, "SmartFailing");
@@ -329,6 +338,14 @@ namespace Singularity.Apps.Disks {
             if (nvme) {
                 header ({ _("Attribute"), _("Value") });
                 var dict = reply.get_child_value (0);
+                var used = dict.lookup_value ("percent_used", VariantType.BYTE);
+                var written = dict.lookup_value ("total_data_written", VariantType.UINT64);
+                life_known = used != null && written != null;
+                if (life_known) {
+                    life_used = used.get_byte ();
+                    life_written = written.get_uint64 ();
+                    sync ();
+                }
                 int row = 1;
                 foreach (string key in NVME_KEYS) {
                     var val = dict.lookup_value (key, null);

@@ -43,6 +43,13 @@ void test_temperature () {
     assert (Format.temperature (273.15 + 40) == "40 °C");
 }
 
+void test_writes_left () {
+    assert (Format.writes_left (2000, 2) == 98000);
+    assert (Format.writes_left (2000, 0) == 0);
+    assert (Format.writes_left (2000, 100) == 0);
+    assert (Format.writes_left (2000, 120) == 0);
+}
+
 int main (string[] args) {
     Intl.setlocale (LocaleCategory.ALL, "C");
     Test.init (ref args);
@@ -51,5 +58,6 @@ int main (string[] args) {
     Test.add_func ("/format/names", test_names);
     Test.add_func ("/format/options", test_options);
     Test.add_func ("/format/temperature", test_temperature);
+    Test.add_func ("/format/writes-left", test_writes_left);
     return Test.run ();
 }
