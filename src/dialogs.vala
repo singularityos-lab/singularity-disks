@@ -284,13 +284,13 @@ namespace Singularity.Apps.Disks {
 
     public class FormatDiskDialog : FormDialog {
         private UObject disk;
-        private DropDown scheme;
+        private ChoiceButton scheme;
         private Switch erase;
 
         public FormatDiskDialog (DisksApp app, UObject disk) {
             base (app, _("Format Disk"), _("Format"), true);
             this.disk = disk;
-            scheme = new DropDown.from_strings ({
+            scheme = new ChoiceButton.from_strings ({
                 _("GPT (modern computers, disks over 2 TB)"), _("MBR (older computers and devices)"), _("No Partitioning (Empty)")
             });
             row (_("Partitioning"), scheme);
@@ -322,7 +322,7 @@ namespace Singularity.Apps.Disks {
         private Segment free;
         private bool dos;
         private SpinButton size;
-        private DropDown? kind = null;
+        private ChoiceButton? kind = null;
         private Entry? name_entry = null;
         private FsChooser chooser;
 
@@ -350,7 +350,7 @@ namespace Singularity.Apps.Disks {
             size.value_changed ();
             body.append (free_after);
             if (dos && !free.logical) {
-                kind = new DropDown.from_strings ({ _("Primary"), _("Extended (holds more partitions)") });
+                kind = new ChoiceButton.from_strings ({ _("Primary"), _("Extended (holds more partitions)") });
                 row (_("Partition Kind"), kind);
             }
             if (!dos) {
@@ -400,7 +400,7 @@ namespace Singularity.Apps.Disks {
         private bool dos;
         private string current_type;
         private string[] ids = {};
-        private DropDown type;
+        private ChoiceButton type;
         private Entry? name_entry = null;
         private uint64 flags;
         private CheckButton[] flag_checks = {};
@@ -422,7 +422,7 @@ namespace Singularity.Apps.Disks {
                 ids += current_type;
                 names += dos ? Format.dos_type_name (current_type) : Format.gpt_type_name (current_type);
             }
-            type = new DropDown.from_strings (names);
+            type = new ChoiceButton.from_strings (names);
             for (int i = 0; i < ids.length; i++) if (same_type (ids[i], current_type)) type.selected = i;
             row (_("Type"), type);
             if (!dos) {
@@ -730,7 +730,7 @@ namespace Singularity.Apps.Disks {
 
     public class DriveSettingsDialog : FormDialog {
         private UObject drive;
-        private DropDown standby_drop;
+        private ChoiceButton standby_drop;
         private Switch cache_switch;
         private bool cache_known = false;
         private const int[] STANDBY = { 0, 60, 120, 240, 241, 242 };
@@ -750,7 +750,7 @@ namespace Singularity.Apps.Disks {
                     cache = c.get_boolean ();
                 }
             }
-            standby_drop = new DropDown.from_strings ({ _("Never"), _("5 minutes"), _("10 minutes"), _("20 minutes"), _("30 minutes"), _("1 hour") });
+            standby_drop = new ChoiceButton.from_strings ({ _("Never"), _("5 minutes"), _("10 minutes"), _("20 minutes"), _("30 minutes"), _("1 hour") });
             for (int i = 0; i < STANDBY.length; i++) if (STANDBY[i] == standby) standby_drop.selected = i;
             row (_("Spin Down When Idle"), standby_drop);
             cache_switch = new Switch ();
