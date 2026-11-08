@@ -79,6 +79,16 @@ namespace Singularity.Apps.Disks {
             return bus == "usb" || bus == "sdio" || bus == "ieee1394";
         }
 
+        private static bool holds_system (Gee.List<UObject> vols) {
+            foreach (var v in vols) {
+                if (!v.has (IFACE_FILESYSTEM)) continue;
+                foreach (var point in v.mount_points ()) {
+                    if (!point.has_prefix ("/run/media/") && !point.has_prefix ("/media/") && !point.has_prefix ("/mnt/")) return true;
+                }
+            }
+            return false;
+        }
+
         private Gee.List<UObject> volumes (UObject disk) {
             var list = new Gee.ArrayList<UObject> ();
             list.add (disk);
@@ -105,7 +115,7 @@ namespace Singularity.Apps.Disks {
                 var disk = client.block_for_drive (drive);
                 if (disk == null || disk.flag (IFACE_BLOCK, "HintIgnore")) continue;
                 var vols = volumes (disk);
-                if (vols.size == 0) continue;
+                if (vols.size == 0 || holds_system (vols)) continue;
                 var m = new Medium ();
                 m.drive = drive;
                 m.busy = ejecting.contains (drive.path);
