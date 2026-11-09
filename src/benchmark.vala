@@ -223,61 +223,60 @@ namespace Singularity.Apps.Disks {
             double access_sum = 0;
             int access_count = 0;
             string? failure = null;
-            SourceFunc callback = run.callback;
-            new Thread<void*> ("disks-benchmark", () => {
-                var buffer = new uint8[sample];
-                for (int i = 0; i < SAMPLES && AtomicInt.get (ref stop) == 0; i++) {
-                    uint64 offset = size > sample ? ((size - sample) / (SAMPLES - 1) * i) & ~((uint64) 4095) : 0;
-                    fadvise (fd, (int64) offset, (int64) sample, 4);
-                    int64 t0 = get_monotonic_time ();
-                    ssize_t n = pread (fd, buffer, (size_t) sample, (int64) offset);
-                    int64 t1 = get_monotonic_time ();
-                    if (n <= 0) {
-                        failure = _("Reading failed: %s").printf (strerror (errno));
-                        break;
+            try {
+                yield Async.run<bool>((c) => {
+                    var buffer = new uint8[sample];
+                    for (int i = 0; i < SAMPLES && AtomicInt.get (ref stop) == 0; i++) {
+                        uint64 offset = size > sample ? ((size - sample) / (SAMPLES - 1) * i) & ~((uint64) 4095) : 0;
+                        fadvise (fd, (int64) offset, (int64) sample, 4);
+                        int64 t0 = get_monotonic_time ();
+                        ssize_t n = pread (fd, buffer, (size_t) sample, (int64) offset);
+                        int64 t1 = get_monotonic_time ();
+                        if (n <= 0) {
+                            failure = _("Reading failed: %s").printf (strerror (errno));
+                            break;
+                        }
+                        double rate = n / ((t1 - t0) / 1000000.0) / 1000000.0;
+                        double x = size > 0 ? (double) offset / size : 0;
+                        Async.post(this, () => {
+                            rate_chart.add (x, rate);
+                            sum += rate;
+                            count++;
+                            lo = double.min (lo, rate);
+                            hi = double.max (hi, rate);
+                            avg_rate.label = Format.rate (sum / count * 1000000);
+                            min_rate.label = Format.rate (lo * 1000000);
+                            max_rate.label = Format.rate (hi * 1000000);
+                            status.label = _("Measuring read rate");
+                        });
                     }
-                    double rate = n / ((t1 - t0) / 1000000.0) / 1000000.0;
-                    double x = size > 0 ? (double) offset / size : 0;
-                    Idle.add (() => {
-                        rate_chart.add (x, rate);
-                        sum += rate;
-                        count++;
-                        lo = double.min (lo, rate);
-                        hi = double.max (hi, rate);
-                        avg_rate.label = Format.rate (sum / count * 1000000);
-                        min_rate.label = Format.rate (lo * 1000000);
-                        max_rate.label = Format.rate (hi * 1000000);
-                        status.label = _("Measuring read rate");
-                        return Source.REMOVE;
-                    });
-                }
-                var small = new uint8[4096];
-                for (int i = 0; i < ACCESS_SAMPLES && failure == null && AtomicInt.get (ref stop) == 0; i++) {
-                    uint64 offset = size > 4096 ? ((uint64) Random.next_int () << 32 | Random.next_int ()) % (size - 4096) & ~((uint64) 4095) : 0;
-                    fadvise (fd, (int64) offset, 4096, 4);
-                    int64 t0 = get_monotonic_time ();
-                    ssize_t n = pread (fd, small, 4096, (int64) offset);
-                    int64 t1 = get_monotonic_time ();
-                    if (n <= 0) {
-                        failure = _("Reading failed: %s").printf (strerror (errno));
-                        break;
+                    var small = new uint8[4096];
+                    for (int i = 0; i < ACCESS_SAMPLES && failure == null && AtomicInt.get (ref stop) == 0; i++) {
+                        uint64 offset = size > 4096 ? ((uint64) Random.next_int () << 32 | Random.next_int ()) % (size - 4096) & ~((uint64) 4095) : 0;
+                        fadvise (fd, (int64) offset, 4096, 4);
+                        int64 t0 = get_monotonic_time ();
+                        ssize_t n = pread (fd, small, 4096, (int64) offset);
+                        int64 t1 = get_monotonic_time ();
+                        if (n <= 0) {
+                            failure = _("Reading failed: %s").printf (strerror (errno));
+                            break;
+                        }
+                        double ms = (t1 - t0) / 1000.0;
+                        double x = size > 0 ? (double) offset / size : 0;
+                        Async.post(this, () => {
+                            access_chart.add (x, ms);
+                            access_sum += ms;
+                            access_count++;
+                            avg_access.label = "%.2f ms".printf (access_sum / access_count);
+                            status.label = _("Measuring access time");
+                        });
                     }
-                    double ms = (t1 - t0) / 1000.0;
-                    double x = size > 0 ? (double) offset / size : 0;
-                    Idle.add (() => {
-                        access_chart.add (x, ms);
-                        access_sum += ms;
-                        access_count++;
-                        avg_access.label = "%.2f ms".printf (access_sum / access_count);
-                        status.label = _("Measuring access time");
-                        return Source.REMOVE;
-                    });
-                }
-                Posix.close (fd);
-                Idle.add ((owned) callback);
-                return null;
-            });
-            yield;
+                    Posix.close (fd);
+                    return true;
+                }, Async.Qos.USER);
+            } catch (Error e) {
+                warning("%s", e.message);
+            }
             running = false;
             start_button.label = _("Start");
             start_button.add_css_class ("suggested-action");

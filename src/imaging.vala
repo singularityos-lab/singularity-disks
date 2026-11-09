@@ -37,7 +37,7 @@ namespace Singularity.Apps.Disks {
                 progress (now, total, secs > 0 ? now / secs : 0);
                 return Source.CONTINUE;
             });
-            new Thread<void*> ("disks-copy", () => {
+            Async.dispatch(null, Async.Qos.USER, (c) => {
                 var buffer = new uint8[CHUNK];
                 while (AtomicInt.get (ref cancelled) == 0) {
                     ssize_t n = Posix.read (source, buffer, CHUNK);
@@ -65,14 +65,12 @@ namespace Singularity.Apps.Disks {
                 }
                 Posix.close (source);
                 Posix.close (target);
-                Idle.add (() => {
+                return () => {
                     Source.remove (tick);
                     double secs = (get_monotonic_time () - started) / 1000000.0;
                     progress (done, total, secs > 0 ? done / secs : 0);
                     finished (failure, AtomicInt.get (ref cancelled) != 0);
-                    return Source.REMOVE;
-                });
-                return null;
+                };
             });
         }
     }
