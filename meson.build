@@ -38,6 +38,7 @@ executable('singularity-disks',
     'src/smart.vala',
     'src/benchmark.vala',
     'src/imaging.vala',
+    'src/agent_intents.vala',
   ),
   dependencies: [gtk_dep, gee_dep, gio_dep, gio_unix_dep, posix_dep, m_dep, libsingularity_dep],
   install: true
