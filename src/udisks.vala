@@ -204,6 +204,7 @@ namespace Singularity.Apps.Disks {
                 if (!o.has (IFACE_LOOP) || !o.has (IFACE_BLOCK)) continue;
                 if (o.u64 (IFACE_BLOCK, "Size") == 0) continue;
                 if (o.has (IFACE_PARTITION)) continue;
+                if (o.flag (IFACE_BLOCK, "HintIgnore")) continue;
                 list.add (o);
             }
             list.sort ((a, b) => strcmp (a.device (), b.device ()));
