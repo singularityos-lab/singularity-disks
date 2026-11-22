@@ -1,0 +1,261 @@
+{
+ "format": 1,
+ "canvas": [
+  236,
+  236
+ ],
+ "box": [
+  18,
+  18,
+  218,
+  218
+ ],
+ "stack": [
+  {
+   "shadow": {
+    "dx": 0,
+    "dy": 5,
+    "blur": 6,
+    "color": "#080f1f",
+    "opacity": 0.5,
+    "region": [
+     -20,
+     -20,
+     276,
+     276
+    ]
+   },
+   "stack": [
+    {
+     "layer": "layers/000.svg",
+     "piece": "case"
+    },
+    {
+     "layer": "layers/001.svg",
+     "piece": "case"
+    }
+   ]
+  },
+  {
+   "rim": "M40 18H196A22 22 0 0 1 218 40V186A22 22 0 0 1 196 208H40A22 22 0 0 1 18 186V40A22 22 0 0 1 40 18Z",
+   "light": [
+    18,
+    18,
+    218,
+    208
+   ],
+   "piece": "case"
+  },
+  {
+   "layer": "layers/003.svg",
+   "piece": "case"
+  },
+  {
+   "layer": "layers/004.svg",
+   "piece": "case"
+  },
+  {
+   "layer": "layers/005.svg",
+   "piece": "case"
+  },
+  {
+   "layer": "layers/006.svg",
+   "piece": "case"
+  },
+  {
+   "layer": "layers/007.svg",
+   "piece": "case"
+  },
+  {
+   "layer": "layers/008.svg",
+   "piece": "case"
+  },
+  {
+   "layer": "layers/009.svg",
+   "piece": "case"
+  },
+  {
+   "layer": "layers/010.svg",
+   "piece": "case"
+  },
+  {
+   "layer": "layers/011.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/012.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/013.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/014.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/015.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/016.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/017.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/018.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/019.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/020.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/021.svg",
+   "piece": "platter"
+  },
+  {
+   "layer": "layers/022.svg",
+   "piece": "pivot"
+  },
+  {
+   "layer": "layers/023.svg",
+   "piece": "pivot"
+  },
+  {
+   "layer": "layers/024.svg",
+   "piece": "arm"
+  },
+  {
+   "layer": "layers/025.svg",
+   "piece": "arm"
+  },
+  {
+   "layer": "layers/026.svg",
+   "piece": "arm"
+  },
+  {
+   "layer": "layers/027.svg",
+   "piece": "arm"
+  },
+  {
+   "layer": "layers/028.svg",
+   "piece": "arm"
+  },
+  {
+   "layer": "layers/029.svg",
+   "piece": "light"
+  }
+ ],
+ "motion": [
+  {
+   "piece": "case",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": [
+    {
+     "kind": "scale",
+     "from": [
+      0.9,
+      0.9
+     ],
+     "at": 0,
+     "duration": 300,
+     "ease": "out"
+    }
+   ]
+  },
+  {
+   "piece": "platter",
+   "origin": [
+    104.0,
+    112.0
+   ],
+   "tracks": [
+    {
+     "kind": "rotate",
+     "from": [
+      -240
+     ],
+     "at": 40,
+     "duration": 680,
+     "ease": "out"
+    },
+    {
+     "kind": "opacity",
+     "from": [
+      0
+     ],
+     "at": 40,
+     "duration": 160,
+     "ease": "out"
+    }
+   ]
+  },
+  {
+   "piece": "pivot",
+   "origin": [
+    104.0,
+    112.0
+   ],
+   "tracks": [
+    {
+     "kind": "scale",
+     "from": [
+      0.2,
+      0.2
+     ],
+     "at": 200,
+     "duration": 260,
+     "ease": "spring"
+    }
+   ]
+  },
+  {
+   "piece": "arm",
+   "origin": [
+    176.0,
+    180.0
+   ],
+   "tracks": [
+    {
+     "kind": "rotate",
+     "from": [
+      -34
+     ],
+     "at": 330,
+     "duration": 440,
+     "ease": "spring"
+    }
+   ]
+  },
+  {
+   "piece": "light",
+   "origin": [
+    196.0,
+    200.0
+   ],
+   "tracks": [
+    {
+     "kind": "opacity",
+     "from": [
+      0
+     ],
+     "at": 700,
+     "duration": 120,
+     "ease": "out"
+    }
+   ]
+  }
+ ]
+}
