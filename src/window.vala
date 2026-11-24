@@ -538,6 +538,24 @@ namespace Singularity.Apps.Disks {
             refresh ();
         }
 
+        public Variant save_migration () {
+            var d = new VariantDict ();
+            d.insert_value ("drive", new Variant.string (selected_path ?? ""));
+            d.insert_value ("volume", new Variant.string (volume_path ?? ""));
+            return d.end ();
+        }
+
+        public void restore_migration (Variant data) {
+            var d = new VariantDict (data);
+            string drive = (d.lookup_value ("drive", VariantType.STRING) ?? new Variant.string ("")).get_string ();
+            string volume = (d.lookup_value ("volume", VariantType.STRING) ?? new Variant.string ("")).get_string ();
+            selected_path = drive != "" ? drive : null;
+            volume_path = volume != "" ? volume : null;
+            page_signature = "";
+            sync_active ();
+            refresh ();
+        }
+
         private UObject? disk_block (UObject target) {
             return target.has (IFACE_DRIVE) ? client.block_for_drive (target) : target;
         }

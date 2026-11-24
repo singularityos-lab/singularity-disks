@@ -112,6 +112,10 @@ namespace Singularity.Apps.Disks {
         private int stop = 0;
         private bool running = false;
 
+        public bool busy {
+            get { return running; }
+        }
+
         public BenchmarkDialog (DisksApp app, UObject block) {
             base (app, true);
             transient_for = dialog_parent (app, this);

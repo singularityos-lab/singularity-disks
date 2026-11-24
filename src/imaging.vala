@@ -98,6 +98,10 @@ namespace Singularity.Apps.Disks {
         private BlockCopy? copy = null;
         private bool done = false;
 
+        public bool busy {
+            get { return copy != null && !done; }
+        }
+
         public ImageDialog (DisksApp app, UObject block, bool restore) {
             base (app, true);
             transient_for = dialog_parent (app, this);

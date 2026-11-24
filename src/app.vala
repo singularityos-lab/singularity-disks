@@ -3,7 +3,7 @@ using Singularity.Widgets;
 
 namespace Singularity.Apps.Disks {
 
-    public class DisksApp : Singularity.Application {
+    public class DisksApp : Singularity.Application, Singularity.Migration.Migratable {
 
         private bool attach_pending;
 
@@ -149,6 +149,39 @@ namespace Singularity.Apps.Disks {
                     return ++tries < 50 ? Source.CONTINUE : Source.REMOVE;
                 });
             }
+        }
+
+        public void prepare_move () throws Singularity.Migration.MigrationError {
+            foreach (var w in get_windows ()) {
+                if ((w is ImageDialog && ((ImageDialog) w).busy) || (w is BenchmarkDialog && ((BenchmarkDialog) w).busy)) {
+                    throw new Singularity.Migration.MigrationError.UNSUPPORTED (_("Disks can move once the running disk operation is finished"));
+                }
+            }
+        }
+
+        public Variant save_model () {
+            return new VariantDict ().end ();
+        }
+
+        public async void restore_model (Variant model) throws Error {
+        }
+
+        public string window_kind (Gtk.Window w) {
+            return (w is DisksWindow) ? "disks" : "";
+        }
+
+        public Variant save_window (Gtk.Window w) {
+            return ((DisksWindow) w).save_migration ();
+        }
+
+        public async Gtk.Window? rebuild_window (string kind, Variant data) throws Error {
+            if (kind != "disks") return null;
+            foreach (var old in get_windows ().copy ()) {
+                if (old is DisksWindow) old.destroy ();
+            }
+            var w = new DisksWindow (this);
+            w.restore_migration (data);
+            return w;
         }
 
         private void show_attach () {
