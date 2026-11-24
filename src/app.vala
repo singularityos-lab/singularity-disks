@@ -3,7 +3,7 @@ using Singularity.Widgets;
 
 namespace Singularity.Apps.Disks {
 
-    public class DisksApp : Singularity.Application, Singularity.Migration.Migratable {
+    public class DisksApp : Singularity.Application, Singularity.Migration.Migratable, Singularity.Startup.Bootable {
 
         private bool attach_pending;
 
@@ -105,7 +105,7 @@ namespace Singularity.Apps.Disks {
             attach.activate.connect (() => {
                 if (get_active_window () == null) {
                     attach_pending = true;
-                    activate ();
+                    show_window ();
                     return;
                 }
                 show_attach ();
@@ -133,7 +133,30 @@ namespace Singularity.Apps.Disks {
             set_accels_for_action ("app.quit", { "<Control>q" });
         }
 
-        public override void activate () {
+        public Singularity.Startup.Plan build_plan (Singularity.Startup.Request request) {
+            var plan = new Singularity.Startup.Plan ();
+            plan.version = "disks-1";
+            if (request.kind == Singularity.Startup.RequestKind.SERVICE) {
+                plan.main ("ready", Singularity.Startup.Category.PREPARE, (c) => {})
+                    .reaches (Singularity.Startup.Milestone.SHELL_READY)
+                    .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+                    .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+                return plan;
+            }
+            plan.main ("window", Singularity.Startup.Category.SHELL, (c) => {
+                show_window ();
+                c.window = get_active_window ();
+            }).reaches (Singularity.Startup.Milestone.SHELL_READY)
+              .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+              .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+            return plan;
+        }
+
+        public void handle_request (Singularity.Startup.Request request) {
+            show_window ();
+        }
+
+        private void show_window () {
             var window = get_active_window ();
             if (window == null) window = new DisksWindow (this);
             window.present ();
